@@ -31,7 +31,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            z-index: -1; 
+            z-index: -1;
             pointer-events: none;
         }
 
@@ -125,7 +125,7 @@
             height: 100vh;
             perspective: 1000px;
             display: none;
-            z-index: 10; 
+            z-index: 10;
         }
 
         #gallery {
@@ -180,15 +180,15 @@
             top: 50%;
             left: 40px;
             transform: translateY(-50%);
-            z-index: 100; 
-            display: none; 
+            z-index: 100;
+            display: none;
             box-shadow: 0 5px 20px rgba(255, 77, 109, 0.5);
             transition: all 0.3s ease;
         }
 
         #btn-izquierdo:hover {
             background: var(--hover-color);
-            transform: translateY(-50%) scale(1.05); 
+            transform: translateY(-50%) scale(1.05);
         }
 
         #texto-derecho {
@@ -196,8 +196,8 @@
             top: 50%;
             right: 40px;
             transform: translateY(-50%);
-            z-index: 5; 
-            display: none; 
+            z-index: 5;
+            display: none;
             font-family: 'Dancing Script', cursive;
             font-size: 3rem;
             color: white;
@@ -205,7 +205,7 @@
             text-align: center;
             line-height: 1.2;
             transition: opacity 0.4s ease;
-            pointer-events: none; 
+            pointer-events: none;
         }
 
         /* Ajuste para móviles */
@@ -216,14 +216,18 @@
                 left: 50%;
                 transform: translateX(-50%);
             }
+
             #btn-izquierdo:hover {
                 transform: translateX(-50%) scale(1.05);
             }
+
             #texto-derecho {
-                top: 80px; /* Un poco más arriba para no tapar el centro */
+                top: 80px;
+                /* Un poco más arriba para no tapar el centro */
                 right: 50%;
                 transform: translateX(50%);
-                font-size: 1.5rem; /* ¡TEXTO MÁS PEQUEÑO EN CELULARES! */
+                font-size: 1.5rem;
+                /* ¡TEXTO MÁS PEQUEÑO EN CELULARES! */
                 width: 90%;
             }
         }
@@ -388,7 +392,7 @@
                     x: shootingHeart.x,
                     y: shootingHeart.y,
                     opacity: 1,
-                    size: Math.random() * 6 + 2 
+                    size: Math.random() * 6 + 2
                 });
 
                 if (shootingHeart.trail.length > 40) {
@@ -396,7 +400,7 @@
                 }
 
                 shootingHeart.trail.forEach((p, index) => {
-                    p.opacity -= 0.025; 
+                    p.opacity -= 0.025;
                     if (p.opacity > 0) {
                         ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
                         ctx.shadowBlur = 10;
@@ -407,11 +411,11 @@
                     }
                 });
 
-                ctx.font = "48px Arial"; 
-                ctx.shadowBlur = 30; 
+                ctx.font = "48px Arial";
+                ctx.shadowBlur = 30;
                 ctx.shadowColor = "#ff4d6d";
-                ctx.fillText("❤️", shootingHeart.x - 24, shootingHeart.y + 16); 
-                ctx.shadowBlur = 0; 
+                ctx.fillText("❤️", shootingHeart.x - 24, shootingHeart.y + 16);
+                ctx.shadowBlur = 0;
 
                 if (shootingHeart.y > canvas.height || shootingHeart.x < -50 || shootingHeart.x > canvas.width + 50) {
                     shootingHeart.active = false;
@@ -421,9 +425,9 @@
                 if (Math.random() < 0.01) {
                     shootingHeart.active = true;
                     shootingHeart.x = Math.random() * canvas.width;
-                    shootingHeart.y = -50; 
-                    shootingHeart.vx = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 2 + 1); 
-                    shootingHeart.vy = Math.random() * 2 + 3; 
+                    shootingHeart.y = -50;
+                    shootingHeart.vx = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 2 + 1);
+                    shootingHeart.vy = Math.random() * 2 + 3;
                     shootingHeart.trail = [];
                 }
             }
@@ -438,7 +442,7 @@
         window.addEventListener("resize", initStars);
 
         /* LÓGICA DE TEXTOS LATERALES */
-        
+
         const frasesLaterales = [
             "Eres increíble aún recién levantada, eres increíble ya dormida, eres increíble, siendo tú😊",
             "Ojalá te miraras con los mismos ojos que yo te veo, para que nunca pienses mal de ti.💖",
@@ -448,23 +452,23 @@
             "Espero cada 8 recuerdes que te amo cada 🌹",
             "❤️"
         ];
-        
+
         let indiceFraseLateral = 0;
 
         function cambiarTextoLateral() {
             const divTexto = document.getElementById("texto-derecho");
-            
+
             divTexto.style.opacity = 0;
-            
+
             setTimeout(() => {
                 indiceFraseLateral++;
                 if (indiceFraseLateral >= frasesLaterales.length) {
                     indiceFraseLateral = 0;
                 }
-                
+
                 divTexto.innerText = frasesLaterales[indiceFraseLateral];
                 divTexto.style.opacity = 1;
-            }, 400); 
+            }, 400);
         }
 
         /* TUNEL */
@@ -503,11 +507,11 @@
 
             document.getElementById("scene").style.display = "block";
             document.getElementById("instrucciones").style.display = "block";
-            
+
             // Mostrar los nuevos controles laterales
             document.getElementById("btn-izquierdo").style.display = "block";
             document.getElementById("texto-derecho").style.display = "block";
-            
+
             // Colocar la primera frase lateral
             document.getElementById("texto-derecho").innerText = frasesLaterales[0];
             // Asegurar que se muestre (Fade in)
@@ -564,7 +568,7 @@
             const finalTxt = document.createElement("div");
 
             finalTxt.className = "mensaje-final";
-            finalTxt.innerText = "Felices 7 meses ❤️";
+            finalTxt.innerText = "Felices 7 meses❤️";
 
             const finalZ = -(totalItems * spacing) - 2000;
 
@@ -603,9 +607,7 @@
             gallery.style.transform = `translate(-50%,-50%) translateZ(${cameraZ}px)`;
 
             requestAnimationFrame(animateCamera);
-
         }
-
         animateCamera();
 
     </script>
