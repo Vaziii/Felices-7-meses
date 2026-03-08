@@ -31,7 +31,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            z-index: 0;
+            z-index: -1; 
             pointer-events: none;
         }
 
@@ -125,7 +125,7 @@
             height: 100vh;
             perspective: 1000px;
             display: none;
-            z-index: 10;
+            z-index: 10; 
         }
 
         #gallery {
@@ -173,6 +173,61 @@
             z-index: 50;
             display: none;
         }
+
+        /* BOTÓN Y TEXTO LATERAL */
+        #btn-izquierdo {
+            position: fixed;
+            top: 50%;
+            left: 40px;
+            transform: translateY(-50%);
+            z-index: 100; 
+            display: none; 
+            box-shadow: 0 5px 20px rgba(255, 77, 109, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        #btn-izquierdo:hover {
+            background: var(--hover-color);
+            transform: translateY(-50%) scale(1.05); 
+        }
+
+        #texto-derecho {
+            position: fixed;
+            top: 50%;
+            right: 40px;
+            transform: translateY(-50%);
+            z-index: 5; 
+            display: none; 
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            color: white;
+            /* SE ELIMINÓ EL TEXT-SHADOW AQUÍ PARA QUITAR EL SOMBREADO */
+            max-width: 300px;
+            text-align: center;
+            line-height: 1.2;
+            transition: opacity 0.4s ease;
+            pointer-events: none; 
+        }
+
+        /* Ajuste para móviles */
+        @media (max-width: 768px) {
+            #btn-izquierdo {
+                top: auto;
+                bottom: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            #btn-izquierdo:hover {
+                transform: translateX(-50%) scale(1.05);
+            }
+            #texto-derecho {
+                top: 100px;
+                right: 50%;
+                transform: translateX(50%);
+                font-size: 2.5rem;
+                width: 90%;
+            }
+        }
     </style>
 </head>
 
@@ -190,19 +245,22 @@
     </audio>
 
     <div id="inicio">
-        <img src="https://i.pinimg.com/originals/05/ba/83/05ba8337e7d2d7051a602175ecb9c606.gif" class="gif">
+        <img src="https://i.pinimg.com/originals/e4/70/fa/e470fab0bb6af102a1d9f96f09950af8.png" class="gif">
         <h1>¿Estás lista para tu regalo?</h1>
         <button onclick="iniciarExperiencia()">Sí ❤️</button>
     </div>
 
     <div id="historia">
         <p id="textoHistoria">Hay cosas que no siempre se pueden explicar con palabras...</p>
-        <button onclick="siguienteTexto()">Seguir leyendo</button>
+        <button onclick="siguienteTexto()">❤️</button>
     </div>
 
     <div id="scene">
         <div id="gallery"></div>
     </div>
+
+    <button id="btn-izquierdo" onclick="cambiarTextoLateral()">Recibir Mas Amor ❤️</button>
+    <div id="texto-derecho"></div>
 
     <div id="instrucciones">
         Disfruta el viaje ✨
@@ -241,8 +299,8 @@
             "Hay cosas que no siempre se pueden explicar con palabras...",
             "Desde que llegaste a mi vida todo se volvió más bonito.",
             "Eres alguien muy especial para mí.",
-            "Por eso preparé algo especial.",
-            "Mira esto ❤️"
+            "Por eso te preparé algo que te sientas especial.",
+            "Espero Te guste ❤️"
         ];
 
         let paso = 0;
@@ -264,12 +322,21 @@
 
         }
 
-        /* GALAXIA */
+        /* GALAXIA Y ESTRELLA FUGAZ */
 
         const canvas = document.getElementById("galaxia");
         const ctx = canvas.getContext("2d");
 
         let stars = [];
+
+        let shootingHeart = {
+            active: false,
+            x: 0,
+            y: 0,
+            vx: 0,
+            vy: 0,
+            trail: []
+        };
 
         function initStars() {
 
@@ -313,6 +380,55 @@
 
             });
 
+            // Lógica de la estrella fugaz de corazón
+            if (shootingHeart.active) {
+                shootingHeart.x += shootingHeart.vx;
+                shootingHeart.y += shootingHeart.vy;
+
+                shootingHeart.trail.push({
+                    x: shootingHeart.x,
+                    y: shootingHeart.y,
+                    opacity: 1,
+                    size: Math.random() * 6 + 2 
+                });
+
+                if (shootingHeart.trail.length > 40) {
+                    shootingHeart.trail.shift();
+                }
+
+                shootingHeart.trail.forEach((p, index) => {
+                    p.opacity -= 0.025; 
+                    if (p.opacity > 0) {
+                        ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+                        ctx.shadowBlur = 10;
+                        ctx.shadowColor = "#ff4d6d";
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                });
+
+                ctx.font = "48px Arial"; 
+                ctx.shadowBlur = 30; 
+                ctx.shadowColor = "#ff4d6d";
+                ctx.fillText("❤️", shootingHeart.x - 24, shootingHeart.y + 16); 
+                ctx.shadowBlur = 0; 
+
+                if (shootingHeart.y > canvas.height || shootingHeart.x < -50 || shootingHeart.x > canvas.width + 50) {
+                    shootingHeart.active = false;
+                    shootingHeart.trail = [];
+                }
+            } else {
+                if (Math.random() < 0.01) {
+                    shootingHeart.active = true;
+                    shootingHeart.x = Math.random() * canvas.width;
+                    shootingHeart.y = -50; 
+                    shootingHeart.vx = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 2 + 1); 
+                    shootingHeart.vy = Math.random() * 2 + 3; 
+                    shootingHeart.trail = [];
+                }
+            }
+
             requestAnimationFrame(drawStars);
 
         }
@@ -322,61 +438,55 @@
 
         window.addEventListener("resize", initStars);
 
+        /* LÓGICA DE TEXTOS LATERALES */
+        
+        const frasesLaterales = [
+            "Eres increíble aún recién levantada, eres increíble ya dormida, eres increíble, siendo tú😊",
+            "Ojalá te miraras con los mismos ojos que yo te veo, para que nunca pienses mal de ti.💖",
+            "Si tus ojos fueran mina, tus lágrimas serian los diamantes más hermosos que puedes tener✨",
+            "El viento que roza tu cabello es el mismo aliento que te mando para que sigas recorriendo la vida cada día bb🥰",
+            "Te amo tanto como sea posible, para que cuando nos separemos sea imposible🌌",
+            "Espero cada 8 recuerdes que te amo cada 🌹",
+            "❤️"
+        ];
+        
+        let indiceFraseLateral = 0;
+
+        function cambiarTextoLateral() {
+            const divTexto = document.getElementById("texto-derecho");
+            
+            divTexto.style.opacity = 0;
+            
+            setTimeout(() => {
+                indiceFraseLateral++;
+                if (indiceFraseLateral >= frasesLaterales.length) {
+                    indiceFraseLateral = 0;
+                }
+                
+                divTexto.innerText = frasesLaterales[indiceFraseLateral];
+                divTexto.style.opacity = 1;
+            }, 400); 
+        }
+
         /* TUNEL */
 
         const images = [
-            "fotos/1.jpeg",
-            "fotos/2.jpeg",
-            "fotos/3.jpeg",
-            "fotos/4.jpeg",
-            "fotos/5.jpeg",
-            "fotos/6.jpeg",
-            "fotos/7.jpeg",
-            "fotos/8.jpeg",
-            "fotos/9.jpeg",
-            "fotos/10.jpeg",
-            "fotos/11.jpeg",
-            "fotos/12.jpeg",
-            "fotos/13.jpeg",
-            "fotos/14.jpeg",
-            "fotos/15.jpeg",
-            "fotos/16.jpeg",
-            "fotos/17.jpeg",
-            "fotos/18.jpeg",
-            "fotos/19.jpeg",
-            "fotos/20.jpeg",
-            "fotos/21.jpeg",
-            "fotos/22.jpeg",
-            "fotos/23.jpeg",
-            "fotos/24.jpeg",
-            "fotos/25.jpeg",
-            "fotos/26.jpeg",
-            "fotos/27.jpeg",
-            "fotos/28.jpeg",
-            "fotos/29.jpeg",
-            "fotos/30.jpeg"
+            "fotos/1.jpeg", "fotos/2.jpeg", "fotos/3.jpeg", "fotos/4.jpeg",
+            "fotos/5.jpeg", "fotos/6.jpeg", "fotos/7.jpeg", "fotos/8.jpeg",
+            "fotos/9.jpeg", "fotos/10.jpeg", "fotos/11.jpeg", "fotos/12.jpeg",
+            "fotos/13.jpeg", "fotos/14.jpeg", "fotos/15.jpeg", "fotos/16.jpeg",
+            "fotos/17.jpeg", "fotos/18.jpeg", "fotos/19.jpeg", "fotos/20.jpeg",
+            "fotos/21.jpeg", "fotos/22.jpeg", "fotos/23.jpeg", "fotos/24.jpeg",
+            "fotos/25.jpeg", "fotos/26.jpeg", "fotos/27.jpeg", "fotos/28.jpeg",
+            "fotos/29.jpeg", "fotos/30.jpeg"
         ];
 
         const phrases = [
-            "Te amo",
-            "Eres increíble",
-            "Hermosa",
-            "Mi universo",
-            "Mi luna",
-            "Mi estrella",
-            "Bella",
-            "Preciosa",
-            "Reina",
-            "Princesa",
-            "Ojitos de kiwi",
-            "Onichan",
-            "UwU",
-            "Te adoro",
-            "Te quiero",
-            "Te deseo",
-            "Mi estrella fugaz",
-            "Mi hamburguesa doble",
-            "Guapa"
+            "Te amo", "Eres increíble", "Hermosa", "Mi universo",
+            "Mi luna", "Mi estrella", "Bella", "Preciosa",
+            "Reina", "Princesa", "Ojitos de kiwi", "Onichan",
+            "UwU", "Te adoro", "Te quiero", "Te deseo",
+            "Mi estrella fugaz", "Mi hamburguesa doble", "Guapa"
         ];
 
         const gallery = document.getElementById("gallery");
@@ -394,6 +504,17 @@
 
             document.getElementById("scene").style.display = "block";
             document.getElementById("instrucciones").style.display = "block";
+            
+            // Mostrar los nuevos controles laterales
+            document.getElementById("btn-izquierdo").style.display = "block";
+            document.getElementById("texto-derecho").style.display = "block";
+            
+            // Colocar la primera frase lateral
+            document.getElementById("texto-derecho").innerText = frasesLaterales[0];
+            // Asegurar que se muestre (Fade in)
+            setTimeout(() => {
+                document.getElementById("texto-derecho").style.opacity = 1;
+            }, 100);
 
             crearTunel();
 
@@ -459,7 +580,7 @@
         /* SCROLL */
 
         window.addEventListener("wheel", e => {
-            targetZ += e.deltaY * 3;
+            targetZ -= e.deltaY * 3;
             if (targetZ < 0) targetZ = 0;
         });
 
