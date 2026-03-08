@@ -31,7 +31,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            z-index: -1;
+            z-index: -1; 
             pointer-events: none;
         }
 
@@ -125,7 +125,7 @@
             height: 100vh;
             perspective: 1000px;
             display: none;
-            z-index: 10;
+            z-index: 10; 
         }
 
         #gallery {
@@ -223,11 +223,9 @@
 
             #texto-derecho {
                 top: 80px;
-                /* Un poco más arriba para no tapar el centro */
                 right: 50%;
                 transform: translateX(50%);
-                font-size: 1.5rem;
-                /* ¡TEXTO MÁS PEQUEÑO EN CELULARES! */
+                font-size: 1.5rem; /* Texto pequeño para celulares */
                 width: 90%;
             }
         }
@@ -325,12 +323,13 @@
 
         }
 
-        /* GALAXIA Y ESTRELLA FUGAZ */
+        /* GALAXIA Y ESTRELLA FUGAZ Y HUMO DEL TEXTO */
 
         const canvas = document.getElementById("galaxia");
         const ctx = canvas.getContext("2d");
 
         let stars = [];
+        let textSmokeParticles = []; // NUEVO: Arreglo para el humo del texto
 
         let shootingHeart = {
             active: false,
@@ -366,10 +365,9 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+            // 1. Dibujar estrellas normales
             stars.forEach(s => {
-
                 ctx.fillStyle = `rgba(255,255,255,${s.opacity})`;
-
                 ctx.beginPath();
                 ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
                 ctx.fill();
@@ -380,10 +378,29 @@
                     s.y = canvas.height;
                     s.x = Math.random() * canvas.width;
                 }
-
             });
 
-            // Lógica de la estrella fugaz de corazón
+            // 2. NUEVO: Dibujar el humo mágico de las letras
+            for (let i = textSmokeParticles.length - 1; i >= 0; i--) {
+                let p = textSmokeParticles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.opacity -= 0.015; // Velocidad con la que desaparece el humo
+
+                if (p.opacity <= 0) {
+                    textSmokeParticles.splice(i, 1);
+                } else {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = "#ff4d6d";
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            ctx.shadowBlur = 0; // Resetear sombra
+
+            // 3. Lógica de la estrella fugaz de corazón
             if (shootingHeart.active) {
                 shootingHeart.x += shootingHeart.vx;
                 shootingHeart.y += shootingHeart.vy;
@@ -441,7 +458,7 @@
 
         window.addEventListener("resize", initStars);
 
-        /* LÓGICA DE TEXTOS LATERALES */
+        /* LÓGICA DE TEXTOS LATERALES CON HUMO MÁGICO */
 
         const frasesLaterales = [
             "Eres increíble aún recién levantada, eres increíble ya dormida, eres increíble, siendo tú😊",
@@ -458,6 +475,7 @@
         function cambiarTextoLateral() {
             const divTexto = document.getElementById("texto-derecho");
 
+            // Ocultamos el texto actual
             divTexto.style.opacity = 0;
 
             setTimeout(() => {
@@ -466,9 +484,42 @@
                     indiceFraseLateral = 0;
                 }
 
+                // Actualizamos el texto y lo mostramos
                 divTexto.innerText = frasesLaterales[indiceFraseLateral];
                 divTexto.style.opacity = 1;
-            }, 400);
+
+                // --- NUEVO: EXPLOSIÓN DE HUMO ESTELAR ---
+                // Obtenemos la posición del texto en la pantalla
+                const rect = divTexto.getBoundingClientRect();
+                
+                // Calculamos el centro aproximado del texto
+                let centroX = rect.left + (rect.width / 2);
+                let centroY = rect.top + (rect.height / 2);
+
+                // Si el ancho es 0 (ej. primera carga), usamos un aproximado
+                if(rect.width === 0){
+                    centroX = window.innerWidth > 768 ? window.innerWidth - 150 : window.innerWidth / 2;
+                    centroY = window.innerWidth > 768 ? window.innerHeight / 2 : 100;
+                }
+
+                // Generamos 60 partículas de humo mágico
+                for (let i = 0; i < 60; i++) {
+                    textSmokeParticles.push({
+                        // Esparcimos el humo a lo ancho y alto del texto
+                        x: centroX + (Math.random() - 0.5) * (rect.width || 300) * 1.2,
+                        y: centroY + (Math.random() - 0.5) * (rect.height || 100),
+                        // Movimiento suave hacia los lados
+                        vx: (Math.random() - 0.5) * 2,
+                        // Movimiento ascendente (como humo/burbujas)
+                        vy: (Math.random() * -2) - 0.5,
+                        opacity: 1,
+                        // Mismo tamaño que el humo de la estrella fugaz
+                        size: Math.random() * 6 + 2
+                    });
+                }
+                // ----------------------------------------
+
+            }, 400); // 400ms es el tiempo que tarda el texto en desaparecer
         }
 
         /* TUNEL */
