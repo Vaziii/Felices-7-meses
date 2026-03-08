@@ -201,7 +201,6 @@
             font-family: 'Dancing Script', cursive;
             font-size: 3rem;
             color: white;
-            /* SE ELIMINÓ EL TEXT-SHADOW AQUÍ PARA QUITAR EL SOMBREADO */
             max-width: 300px;
             text-align: center;
             line-height: 1.2;
@@ -221,10 +220,10 @@
                 transform: translateX(-50%) scale(1.05);
             }
             #texto-derecho {
-                top: 100px;
+                top: 80px; /* Un poco más arriba para no tapar el centro */
                 right: 50%;
                 transform: translateX(50%);
-                font-size: 2.5rem;
+                font-size: 1.5rem; /* ¡TEXTO MÁS PEQUEÑO EN CELULARES! */
                 width: 90%;
             }
         }
