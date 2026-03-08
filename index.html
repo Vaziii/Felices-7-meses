@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para mi niña ❤️</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--primary-color:#ff4d6d;
+--hover-color:#ff758f;
+--bg-color:#050505;
+}
+
+body{
+margin:0;
+overflow:hidden;
+background:var(--bg-color);
+font-family:'Poppins',sans-serif;
+color:white;
+}
+
+/* GALAXIA */
+
+#galaxia{
+position:fixed;
+top:0;
+left:0;
+z-index:0;
+pointer-events:none;
+}
+
+/* AUDIO */
+
+#audio-controls{
+position:fixed;
+top:20px;
+right:20px;
+z-index:100;
+background:rgba(255,255,255,0.1);
+backdrop-filter:blur(10px);
+padding:10px 15px;
+border-radius:50px;
+display:flex;
+gap:12px;
+align-items:center;
+}
+
+#audio-icon{
+cursor:pointer;
+}
+
+#volumen{
+width:80px;
+}
+
+/* INICIO */
+
+#inicio{
+position:relative;
+z-index:20;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+height:100vh;
+text-align:center;
+transition:opacity 1s;
+}
+
+h1{
+font-family:'Dancing Script',cursive;
+font-size:3.5rem;
+color:var(--primary-color);
+}
+
+.gif{
+width:250px;
+border-radius:20px;
+}
+
+button{
+padding:15px 40px;
+font-size:1.2rem;
+border-radius:50px;
+border:none;
+background:var(--primary-color);
+color:white;
+cursor:pointer;
+}
+
+/* HISTORIA */
+
+#historia{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:none;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+text-align:center;
+z-index:30;
+}
+
+#textoHistoria{
+max-width:800px;
+font-size:1.8rem;
+}
+
+/* TUNEL */
+
+#scene{
+position:fixed;
+top:0;
+left:0;
+width:100vw;
+height:100vh;
+perspective:1000px;
+display:none;
+z-index:10;
+}
+
+#gallery{
+position:absolute;
+top:50%;
+left:50%;
+transform-style:preserve-3d;
+transform:translate(-50%,-50%);
+}
+
+.photo{
+position:absolute;
+width:280px;
+height:280px;
+margin-left:-140px;
+margin-top:-140px;
+border-radius:20px;
+overflow:hidden;
+}
+
+.photo img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.phrase{
+position:absolute;
+font-size:2.5rem;
+font-family:'Dancing Script',cursive;
+}
+
+.mensaje-final{
+position:absolute;
+font-size:5rem;
+font-family:'Dancing Script',cursive;
+white-space:nowrap;
+}
+
+#instrucciones{
+position:fixed;
+bottom:30px;
+width:100%;
+text-align:center;
+z-index:50;
+display:none;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="galaxia"></canvas>
+
+<div id="audio-controls">
+<span id="audio-icon" onclick="toggleAudio()">🔊</span>
+<input type="range" id="volumen" min="0" max="1" step="0.01" value="1" oninput="cambiarVolumen(this.value)">
+</div>
+
+<audio id="musica" loop>
+<source src="te-amo.mp3" type="audio/mpeg">
+</audio>
+
+<div id="inicio">
+<img src="https://i.pinimg.com/originals/05/ba/83/05ba8337e7d2d7051a602175ecb9c606.gif" class="gif">
+<h1>¿Estás lista para tu regalo?</h1>
+<button onclick="iniciarExperiencia()">Sí ❤️</button>
+</div>
+
+<div id="historia">
+<p id="textoHistoria">Hay cosas que no siempre se pueden explicar con palabras...</p>
+<button onclick="siguienteTexto()">Seguir leyendo</button>
+</div>
+
+<div id="scene">
+<div id="gallery"></div>
+</div>
+
+<div id="instrucciones">
+Disfruta el viaje ✨
+</div>
+
+<script>
+
+/* AUDIO */
+
+const audio=document.getElementById("musica");
+const audioIcon=document.getElementById("audio-icon");
+
+function iniciarExperiencia(){
+audio.play();
+document.getElementById("inicio").style.display="none";
+document.getElementById("historia").style.display="flex";
+}
+
+function toggleAudio(){
+if(audio.paused){
+audio.play();
+audioIcon.innerText="🔊";
+}else{
+audio.pause();
+audioIcon.innerText="🔇";
+}
+}
+
+function cambiarVolumen(v){
+audio.volume=v;
+}
+
+/* HISTORIA */
+
+const textos=[
+"Hay cosas que no siempre se pueden explicar con palabras...",
+"Desde que llegaste a mi vida todo se volvió más bonito.",
+"Eres alguien muy especial para mí.",
+"Por eso preparé algo especial.",
+"Mira esto ❤️"
+];
+
+let paso=0;
+
+function siguienteTexto(){
+
+paso++;
+
+if(paso<textos.length){
+
+document.getElementById("textoHistoria").innerText=textos[paso];
+
+}else{
+
+document.getElementById("historia").style.display="none";
+iniciarTunel();
+
+}
+
+}
+
+/* GALAXIA */
+
+const canvas=document.getElementById("galaxia");
+const ctx=canvas.getContext("2d");
+
+let stars=[];
+
+function initStars(){
+
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+stars=[];
+
+for(let i=0;i<300;i++){
+
+stars.push({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+r:Math.random()*2,
+v:Math.random()*0.5+0.1,
+opacity:Math.random()
+});
+
+}
+
+}
+
+function drawStars(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+stars.forEach(s=>{
+
+ctx.fillStyle=`rgba(255,255,255,${s.opacity})`;
+
+ctx.beginPath();
+ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+ctx.fill();
+
+s.y-=s.v;
+
+if(s.y<0){
+s.y=canvas.height;
+s.x=Math.random()*canvas.width;
+}
+
+});
+
+requestAnimationFrame(drawStars);
+
+}
+
+initStars();
+drawStars();
+
+window.addEventListener("resize",initStars);
+
+/* TUNEL */
+
+const images=[
+"1.jpeg",
+"2.jpeg",
+"3.jpeg",
+"4.jpeg",
+"5.jpeg",
+"6.jpeg",
+"7.jpeg",
+"8.jpeg",
+"9.jpeg",
+"10.jpeg",
+"11.jpeg",
+"12.jpeg",
+"13.jpeg",
+"14.jpeg",
+"15.jpeg",
+"16.jpeg",
+"17.jpeg",
+"18.jpeg",
+"19.jpeg",
+"20.jpeg",
+"21.jpeg",
+"22.jpeg",
+"23.jpeg",
+"24.jpeg",
+"25.jpeg",
+"26.jpeg",
+"27.jpeg",
+"28.jpeg",
+"29.jpeg",
+"30.jpeg"
+];
+
+const phrases=[
+"Te amo",
+"Eres increíble",
+"Hermosa",
+"Mi universo",
+"Mi luna",
+"Mi estrella",
+"Bella",
+"Preciosa",
+"Reina",
+"Princesa",
+"Ojitos de kiwi",
+"Onichan",
+"UwU",
+"Te adoro",
+"Te quiero",
+"Te deseo",
+"Mi estrella fugaz",
+"Mi hamburguesa doble",
+"Guapa"
+];
+
+const gallery=document.getElementById("gallery");
+
+const totalItems=60;
+const spacing=1200;
+
+let cameraZ=0;
+let targetZ=0;
+let autoScrollActivo=false;
+
+const maxZ=(totalItems*spacing)+400;
+
+function iniciarTunel(){
+
+document.getElementById("scene").style.display="block";
+document.getElementById("instrucciones").style.display="block";
+
+crearTunel();
+
+autoScrollActivo=true;
+
+}
+
+function crearTunel(){
+
+for(let i=0;i<totalItems;i++){
+
+const z=-i*spacing;
+
+const angulo=i*Math.PI*0.4;
+const radio=300+Math.random()*200;
+
+const x=Math.cos(angulo)*radio;
+const y=Math.sin(angulo)*radio;
+
+if(i%2===0){
+
+const photo=document.createElement("div");
+photo.className="photo";
+
+photo.innerHTML=`<img src="${images[(i/2)%images.length]}">`;
+
+photo.style.transform=`translate3d(${x}px,${y}px,${z}px)`;
+
+gallery.appendChild(photo);
+
+}else{
+
+const txt=document.createElement("div");
+txt.className="phrase";
+
+txt.innerText=phrases[Math.floor(Math.random()*phrases.length)];
+
+txt.style.transform=`translate3d(${x}px,${y}px,${z}px)`;
+
+gallery.appendChild(txt);
+
+}
+
+}
+
+/* MENSAJE FINAL */
+
+const finalTxt=document.createElement("div");
+
+finalTxt.className="mensaje-final";
+finalTxt.innerText="Felices 7 meses ❤️";
+
+const finalZ=-(totalItems*spacing)-2000;
+
+finalTxt.style.left="50%";
+finalTxt.style.top="50%";
+finalTxt.style.transform=`translate3d(-50%,-50%,${finalZ}px)`;
+
+gallery.appendChild(finalTxt);
+
+}
+
+/* SCROLL */
+
+window.addEventListener("wheel",e=>{
+targetZ+=e.deltaY*3;
+if(targetZ<0)targetZ=0;
+});
+
+function animateCamera(){
+
+if(autoScrollActivo){
+
+targetZ+=2;
+
+if(targetZ>=maxZ){
+
+targetZ=maxZ;
+autoScrollActivo=false;
+
+}
+
+}
+
+cameraZ+=(targetZ-cameraZ)*0.05;
+
+gallery.style.transform=`translate(-50%,-50%) translateZ(${cameraZ}px)`;
+
+requestAnimationFrame(animateCamera);
+
+}
+
+animateCamera();
+
+</script>
+</body>
+</html>
